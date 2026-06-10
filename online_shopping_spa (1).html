@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ElectroMart — Electronics Shopping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+<body>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Online shopping single-page application with home, products, cart, order, and payment views</h2>
+
+<style>
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --color-brand-blue: #2563eb;
+  --color-brand-purple: #7c3aed;
+  --color-brand-gradient: linear-gradient(135deg, #2563eb 0%, #6366f1 45%, #7c3aed 100%);
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-text-success: #059669;
+  --color-text-info: #2563eb;
+  --color-text-danger: #dc2626;
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f8fafc;
+  --color-background-success: #ecfdf5;
+  --color-background-info: #eff6ff;
+  --color-background-danger: #fef2f2;
+  --color-border-tertiary: #e2e8f0;
+  --border-radius-sm: 8px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 16px rgba(37, 99, 235, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 40px rgba(124, 58, 237, 0.12), 0 4px 12px rgba(15, 23, 42, 0.06);
+  --transition: 0.2s ease;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:var(--font-sans);
+  color:var(--color-text-primary);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.12), transparent),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 40%);
+  min-height:100vh;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+.app-shell{
+  max-width:960px;
+  margin:0 auto;
+  padding:24px 20px 48px;
+}
+
+/* ── Header & Logo ── */
+.site-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:8px;
+  padding-bottom:4px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.brand-logo{
+  width:52px;
+  height:52px;
+  flex-shrink:0;
+  filter:drop-shadow(0 4px 12px rgba(37, 99, 235, 0.25));
+}
+
+.brand-text{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.brand-name{
+  font-size:1.35rem;
+  font-weight:700;
+  letter-spacing:-0.02em;
+  background:var(--color-brand-gradient);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.brand-tagline{
+  font-size:0.75rem;
+  font-weight:500;
+  color:var(--color-text-secondary);
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+}
+
+/* ── Navigation ── */
+nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:10px 12px;
+  border:1px solid var(--color-border-tertiary);
+  border-radius:var(--border-radius-lg);
+  background:var(--color-background-primary);
+  box-shadow:var(--shadow-sm);
+  margin-bottom:28px;
+  position:sticky;
+  top:12px;
+  z-index:100;
+  backdrop-filter:blur(8px);
+}
+
+nav button{
+  background:transparent;
+  border:none;
+  padding:8px 16px;
+  border-radius:var(--border-radius-md);
+  font-size:14px;
+  font-family:inherit;
+  color:var(--color-text-secondary);
+  cursor:pointer;
+  transition:background var(--transition), color var(--transition), box-shadow var(--transition);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+
+nav button:hover{
+  background:var(--color-background-secondary);
+  color:var(--color-text-primary);
+}
+
+nav button.active{
+  background:var(--color-brand-gradient);
+  color:#fff;
+  font-weight:600;
+  box-shadow:0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+nav button:focus-visible{
+  outline:2px solid var(--color-brand-blue);
+  outline-offset:2px;
+}
+
+/* ── Pages ── */
+.page{display:none;animation:fadeIn 0.35s ease}
+.page.active{display:block}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.page-title{
+  font-size:1.25rem;
+  font-weight:600;
+  margin-bottom:16px;
+  letter-spacing:-0.01em;
+  color:var(--color-text-primary);
+}
+
+/* ── Cards ── */
+.card{
+  background:var(--color-background-primary);
+  border:1px solid var(--color-border-tertiary);
+  border-radius:var(--border-radius-lg);
+  padding:1.25rem 1.5rem;
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow var(--transition), border-color var(--transition);
+}
+
+.card:hover{
+  box-shadow:var(--shadow-md);
+  border-color:rgba(99, 102, 241, 0.2);
+}
+
+/* ── Tables ── */
+table{width:100%;border-collapse:collapse;font-size:14px}
+
+th{
+  text-align:left;
+  font-weight:600;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+  color:var(--color-text-secondary);
+  padding:10px 14px;
+  border-bottom:1px solid var(--color-border-tertiary);
+  background:var(--color-background-secondary);
+}
+
+th:first-child{border-radius:var(--border-radius-sm) 0 0 0}
+th:last-child{border-radius:0 var(--border-radius-sm) 0 0}
+
+td{
+  padding:14px;
+  border-bottom:1px solid var(--color-border-tertiary);
+  color:var(--color-text-primary);
+  transition:background var(--transition);
+}
+
+tbody tr:hover td{background:rgba(248, 250, 252, 0.8)}
+tr:last-child td{border-bottom:none}
+
+/* ── Badges ── */
+.badge{
+  display:inline-block;
+  font-size:11px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-weight:600;
+  letter-spacing:0.02em;
+}
+
+.badge-success{background:var(--color-background-success);color:var(--color-text-success)}
+.badge-info{background:var(--color-background-info);color:var(--color-text-info)}
+
+.price{
+  font-weight:600;
+  font-size:15px;
+  color:var(--color-text-primary);
+}
+
+.empty{
+  text-align:center;
+  padding:2.5rem 1rem;
+  color:var(--color-text-secondary);
+  font-size:14px;
+}
+
+.cart-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--color-brand-gradient);
+  color:#fff;
+  border-radius:999px;
+  min-width:20px;
+  height:20px;
+  padding:0 6px;
+  font-size:11px;
+  font-weight:700;
+  margin-left:4px;
+  box-shadow:0 2px 6px rgba(124, 58, 237, 0.35);
+}
+
+/* ── Buttons ── */
+button{
+  font-family:inherit;
+  font-size:14px;
+  font-weight:500;
+  padding:10px 18px;
+  border-radius:var(--border-radius-md);
+  border:1px solid transparent;
+  cursor:pointer;
+  transition:transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--color-brand-gradient);
+  color:#fff;
+  box-shadow:0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+button:hover:not(:disabled){
+  transform:translateY(-1px);
+  box-shadow:0 4px 14px rgba(124, 58, 237, 0.3);
+}
+
+button:active:not(:disabled){transform:translateY(0)}
+
+button:disabled{
+  opacity:0.7;
+  cursor:not-allowed;
+}
+
+button:focus-visible{
+  outline:2px solid var(--color-brand-purple);
+  outline-offset:2px;
+}
+
+.btn-ghost{
+  background:transparent;
+  color:var(--color-text-danger);
+  border:1px solid rgba(220, 38, 38, 0.25);
+  box-shadow:none;
+}
+
+.btn-ghost:hover:not(:disabled){
+  background:var(--color-background-danger);
+  box-shadow:none;
+}
+
+/* ── Forms ── */
+input[type=text],input[type=month]{
+  width:100%;
+  padding:11px 14px;
+  font-family:inherit;
+  font-size:14px;
+  border:1px solid var(--color-border-tertiary);
+  border-radius:var(--border-radius-md);
+  background:var(--color-background-primary);
+  color:var(--color-text-primary);
+  transition:border-color var(--transition), box-shadow var(--transition);
+}
+
+input[type=text]:focus,input[type=month]:focus{
+  outline:none;
+  border-color:var(--color-brand-blue);
+  box-shadow:0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+input::placeholder{color:#94a3b8}
+
+.form-row{margin-bottom:18px}
+
+.form-row label{
+  display:block;
+  font-size:13px;
+  font-weight:500;
+  color:var(--color-text-secondary);
+  margin-bottom:8px;
+}
+
+.total-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 0 4px;
+  border-top:1px solid var(--color-border-tertiary);
+  margin-top:12px;
+}
+
+/* ── Metrics ── */
+.metrics-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:14px;
+  margin-top:24px;
+}
+
+.metric{
+  background:var(--color-background-primary);
+  border:1px solid var(--color-border-tertiary);
+  border-radius:var(--border-radius-lg);
+  padding:1.25rem 1rem;
+  text-align:center;
+  box-shadow:var(--shadow-sm);
+  transition:transform var(--transition), box-shadow var(--transition);
+}
+
+.metric:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow-md);
+}
+
+.metric-label{
+  font-size:12px;
+  font-weight:500;
+  color:var(--color-text-secondary);
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+}
+
+.metric-value{
+  font-size:1.75rem;
+  font-weight:700;
+  background:var(--color-brand-gradient);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* ── Hero ── */
+.hero{
+  background:var(--color-brand-gradient);
+  border-radius:var(--border-radius-lg);
+  padding:2.25rem 2rem;
+  margin-bottom:24px;
+  display:flex;
+  align-items:center;
+  gap:28px;
+  box-shadow:var(--shadow-lg);
+  position:relative;
+  overflow:hidden;
+}
+
+.hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(255,255,255,0.15) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30h20M40 30h20M30 0v20M30 40v20' stroke='rgba(255,255,255,0.08)' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+.hero > *{position:relative;z-index:1}
+
+.hero-icon{
+  font-size:52px;
+  color:rgba(255,255,255,0.9);
+  background:rgba(255,255,255,0.15);
+  width:80px;
+  height:80px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:var(--border-radius-lg);
+  backdrop-filter:blur(4px);
+  flex-shrink:0;
+}
+
+.hero h2{
+  font-size:1.5rem;
+  font-weight:700;
+  margin-bottom:8px;
+  color:#fff;
+  letter-spacing:-0.02em;
+}
+
+.hero p{
+  color:rgba(255,255,255,0.85);
+  font-size:15px;
+  margin-bottom:18px;
+  max-width:420px;
+}
+
+.hero button{
+  background:#fff;
+  color:var(--color-brand-purple);
+  font-weight:600;
+  box-shadow:0 4px 14px rgba(0,0,0,0.15);
+}
+
+.hero button:hover:not(:disabled){
+  background:#f8fafc;
+  box-shadow:0 6px 20px rgba(0,0,0,0.2);
+}
+
+/* ── Offer box ── */
+#offer-box{
+  border-left:4px solid var(--color-text-success);
+  animation:slideDown 0.3s ease;
+}
+
+@keyframes slideDown{
+  from{opacity:0;transform:translateY(-8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+#offer-box p{
+  font-size:14px;
+  color:var(--color-text-success);
+  font-weight:500;
+}
+
+#offer-box code{
+  background:var(--color-background-success);
+  padding:2px 8px;
+  border-radius:var(--border-radius-sm);
+  font-weight:700;
+  letter-spacing:0.05em;
+}
+
+/* ── Cart & order item rows (JS-generated) ── */
+#cart-items > div,
+#order-items table{
+  font-size:14px;
+}
+
+#payment-success i{
+  filter:drop-shadow(0 4px 12px rgba(5, 150, 105, 0.3));
+}
+
+#payment .card{
+  max-width:440px;
+}
+
+.secure-note{
+  margin-top:8px;
+  font-size:13px;
+  color:var(--color-text-secondary);
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:10px 12px;
+  background:var(--color-background-secondary);
+  border-radius:var(--border-radius-md);
+}
+
+.action-row{
+  margin-top:16px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+#cart-items button{
+  padding:4px 10px;
+  font-size:12px;
+  background:transparent;
+  color:var(--color-text-danger);
+  border:1px solid rgba(220, 38, 38, 0.25);
+  box-shadow:none;
+}
+
+#cart-items button:hover:not(:disabled){
+  background:var(--color-background-danger);
+  transform:none;
+  box-shadow:none;
+}
+
+.empty button{
+  margin-top:12px;
+  padding:8px 16px;
+  font-size:13px;
+}
+
+/* ── Footer ── */
+.site-footer{
+  margin-top:48px;
+  padding-top:20px;
+  border-top:1px solid var(--color-border-tertiary);
+  text-align:center;
+  font-size:12px;
+  color:var(--color-text-secondary);
+}
+
+.site-footer span{
+  font-weight:600;
+  background:var(--color-brand-gradient);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* ── Responsive ── */
+@media (max-width:640px){
+  .app-shell{padding:16px 14px 36px}
+  .site-header{flex-direction:column;align-items:flex-start;gap:12px}
+  nav{position:static;gap:4px;padding:8px}
+  nav button{padding:8px 12px;font-size:13px;flex:1 1 auto;justify-content:center}
+  .hero{flex-direction:column;text-align:center;padding:1.75rem 1.25rem}
+  .hero p{margin-left:auto;margin-right:auto}
+  .metrics-grid{grid-template-columns:1fr}
+  table{font-size:13px}
+  th,td{padding:10px 8px}
+  .brand-name{font-size:1.15rem}
+}
+</style>
+
+<div class="app-shell">
+
+<header class="site-header">
+  <div class="brand">
+    <svg class="brand-logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="em-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#2563eb"/>
+          <stop offset="50%" stop-color="#6366f1"/>
+          <stop offset="100%" stop-color="#7c3aed"/>
+        </linearGradient>
+        <linearGradient id="em-grad-soft" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#2563eb" stop-opacity="0.2"/>
+          <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.15"/>
+        </linearGradient>
+      </defs>
+      <!-- Background -->
+      <rect width="64" height="64" rx="14" fill="url(#em-grad-soft)"/>
+      <rect x="1" y="1" width="62" height="62" rx="13" stroke="url(#em-grad)" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <!-- Circuit lines -->
+      <path d="M4 20h8M52 20h8M4 44h6M54 44h6M20 4v6M44 4v6M20 54v6M44 54v6" stroke="url(#em-grad)" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+      <circle cx="12" cy="20" r="1.5" fill="#6366f1"/>
+      <circle cx="52" cy="20" r="1.5" fill="#7c3aed"/>
+      <circle cx="10" cy="44" r="1.5" fill="#2563eb"/>
+      <circle cx="54" cy="44" r="1.5" fill="#6366f1"/>
+      <path d="M12 20h6v4h-6zM46 20h6v4h-6z" stroke="#6366f1" stroke-width="0.8" fill="none" opacity="0.6"/>
+      <!-- Laptop -->
+      <rect x="14" y="22" width="18" height="12" rx="1.5" stroke="url(#em-grad)" stroke-width="1.5" fill="#fff" fill-opacity="0.9"/>
+      <rect x="16" y="24" width="14" height="8" rx="0.5" fill="url(#em-grad)" fill-opacity="0.25"/>
+      <path d="M12 36h22l-1.5 2.5H13.5L12 36z" fill="url(#em-grad)" opacity="0.85"/>
+      <!-- Smartphone -->
+      <rect x="36" y="18" width="10" height="18" rx="2" stroke="url(#em-grad)" stroke-width="1.5" fill="#fff" fill-opacity="0.9"/>
+      <rect x="38" y="21" width="6" height="10" rx="0.5" fill="url(#em-grad)" fill-opacity="0.3"/>
+      <circle cx="41" cy="33" r="1" fill="url(#em-grad)"/>
+      <!-- Shopping cart -->
+      <path d="M28 42h14l2.5 8H26l2-8z" stroke="url(#em-grad)" stroke-width="1.5" stroke-linejoin="round" fill="url(#em-grad)" fill-opacity="0.15"/>
+      <path d="M26 42l-2-6h-4" stroke="url(#em-grad)" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="30" cy="52" r="2" fill="url(#em-grad)"/>
+      <circle cx="40" cy="52" r="2" fill="url(#em-grad)"/>
+      <path d="M30 42v-3h6v3" stroke="url(#em-grad)" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+    <div class="brand-text">
+      <span class="brand-name">ElectroMart</span>
+      <span class="brand-tagline">Smart Tech Shopping</span>
+    </div>
+  </div>
+</header>
+
+<nav id="nav">
+  <button class="active" onclick="go('home')"><i class="ti ti-home" aria-hidden="true"></i> Home</button>
+  <button onclick="go('products')"><i class="ti ti-box" aria-hidden="true"></i> Products</button>
+  <button onclick="go('cart')"><i class="ti ti-shopping-cart" aria-hidden="true"></i> Cart<span id="cart-badge" class="cart-count" style="display:none">0</span></button>
+  <button onclick="go('order')"><i class="ti ti-clipboard-list" aria-hidden="true"></i> Order</button>
+  <button onclick="go('payment')"><i class="ti ti-credit-card" aria-hidden="true"></i> Payment</button>
+</nav>
+
+<div id="home" class="page active">
+  <div class="hero">
+    <i class="ti ti-shopping-bag hero-icon" aria-hidden="true"></i>
+    <div>
+      <h2>Welcome to ElectroMart</h2>
+      <p>Shop Electronics, Mobiles, Accessories and More — curated tech at great prices.</p>
+      <button onclick="showOffer()"><i class="ti ti-tag" aria-hidden="true"></i> View Today's Offer</button>
+    </div>
+  </div>
+  <div id="offer-box" style="display:none" class="card">
+    <p><i class="ti ti-discount" aria-hidden="true"></i> Today's Offer: Get 10% off on all Electronics! Use code <code>ELEC10</code></p>
+  </div>
+  <div class="metrics-grid">
+    <div class="metric"><div class="metric-label">Products</div><div class="metric-value">3</div></div>
+    <div class="metric"><div class="metric-label">Categories</div><div class="metric-value">3</div></div>
+    <div class="metric"><div class="metric-label">Fast Delivery</div><div class="metric-value">✓</div></div>
+  </div>
+</div>
+
+<div id="products" class="page">
+  <h2 class="page-title">Products</h2>
+  <div class="card">
+    <table>
+      <tr><th>Product</th><th>Category</th><th>Price</th><th>Action</th></tr>
+      <tr>
+        <td><i class="ti ti-device-laptop" aria-hidden="true" style="vertical-align:-2px;margin-right:6px;color:var(--color-text-info)"></i>Laptop</td>
+        <td><span class="badge badge-info">Electronics</span></td>
+        <td class="price">₹50,000</td>
+        <td><button onclick="addToCart('Laptop',50000)"><i class="ti ti-shopping-cart-plus" aria-hidden="true"></i> Add to cart</button></td>
+      </tr>
+      <tr>
+        <td><i class="ti ti-device-mobile" aria-hidden="true" style="vertical-align:-2px;margin-right:6px;color:var(--color-text-info)"></i>Smartphone</td>
+        <td><span class="badge badge-info">Mobile</span></td>
+        <td class="price">₹20,000</td>
+        <td><button onclick="addToCart('Smartphone',20000)"><i class="ti ti-shopping-cart-plus" aria-hidden="true"></i> Add to cart</button></td>
+      </tr>
+      <tr>
+        <td><i class="ti ti-headphones" aria-hidden="true" style="vertical-align:-2px;margin-right:6px;color:var(--color-text-info)"></i>Headphones</td>
+        <td><span class="badge badge-success">Accessory</span></td>
+        <td class="price">₹2,000</td>
+        <td><button onclick="addToCart('Headphones',2000)"><i class="ti ti-shopping-cart-plus" aria-hidden="true"></i> Add to cart</button></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div id="cart" class="page">
+  <h2 class="page-title">Shopping Cart</h2>
+  <div class="card">
+    <div id="cart-items"></div>
+    <div class="total-row">
+      <span style="font-weight:600">Total</span>
+      <span class="price" id="cart-total">₹0</span>
+    </div>
+    <div class="action-row">
+      <button class="btn-ghost" onclick="clearCart()"><i class="ti ti-trash" aria-hidden="true"></i> Clear</button>
+      <button onclick="go('order')"><i class="ti ti-arrow-right" aria-hidden="true"></i> Proceed to Checkout</button>
+    </div>
+  </div>
+</div>
+
+<div id="order" class="page">
+  <h2 class="page-title">Order Summary</h2>
+  <div class="card">
+    <div id="order-items"></div>
+    <div class="total-row">
+      <span style="font-weight:600">Order Total</span>
+      <span class="price" id="order-total">₹0</span>
+    </div>
+    <div style="margin-top:16px">
+      <button onclick="go('payment')"><i class="ti ti-credit-card" aria-hidden="true"></i> Proceed to Payment</button>
+    </div>
+  </div>
+</div>
+
+<div id="payment" class="page">
+  <h2 class="page-title">Payment</h2>
+  <div class="card" style="max-width:420px">
+    <div id="payment-success" style="display:none;text-align:center;padding:1.5rem 0">
+      <i class="ti ti-circle-check" style="font-size:48px;color:var(--color-text-success)" aria-hidden="true"></i>
+      <p style="font-size:17px;font-weight:600;margin-top:12px">Payment Successful!</p>
+      <p style="font-size:13px;color:var(--color-text-secondary);margin-top:6px">Thank you for your order.</p>
+      <button style="margin-top:16px" onclick="resetOrder()"><i class="ti ti-home" aria-hidden="true"></i> Back to Home</button>
+    </div>
+    <div id="payment-form">
+      <div class="form-row">
+        <label>Customer Name</label>
+        <input type="text" id="cname" placeholder="Enter your name">
+      </div>
+      <div class="form-row">
+        <label>Card Number</label>
+        <input type="text" id="ccard" placeholder="xxxx xxxx xxxx xxxx" maxlength="19" oninput="formatCard(this)">
+      </div>
+      <div class="form-row">
+        <label>Expiry Date</label>
+        <input type="month" id="cexpiry">
+      </div>
+      <div class="secure-note">
+        <i class="ti ti-shield-lock" aria-hidden="true"></i> Secured payment — demo only, no real data sent
+      </div>
+      <button onclick="submitPayment()"><i class="ti ti-lock" aria-hidden="true"></i> Pay Now — <span id="pay-amount">₹0</span></button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  © 2026 <span>ElectroMart</span> — Your trusted electronics store
+</footer>
+
+</div>
+
+<script>
+let cart = [];
+
+const prices = {Laptop:50000, Smartphone:20000, Headphones:2000};
+const icons = {Laptop:'ti-device-laptop', Smartphone:'ti-device-mobile', Headphones:'ti-headphones'};
+
+function go(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+  document.querySelectorAll('nav button').forEach((b,i) => {
+    const pages = ['home','products','cart','order','payment'];
+    b.classList.toggle('active', pages[i] === page);
+  });
+  if(page === 'cart') renderCart();
+  if(page === 'order') renderOrder();
+  if(page === 'payment') {
+    renderOrder();
+    const t = cart.reduce((s,i)=>s+i.price,0);
+    document.getElementById('pay-amount').textContent = '₹' + t.toLocaleString('en-IN');
+  }
+}
+
+function addToCart(name, price) {
+  cart.push({name, price});
+  updateBadge();
+  const btn = event.target;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<i class="ti ti-check" aria-hidden="true"></i> Added!';
+  btn.disabled = true;
+  setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 1200);
+}
+
+function updateBadge() {
+  const b = document.getElementById('cart-badge');
+  if(cart.length > 0) { b.style.display='inline-flex'; b.textContent=cart.length; }
+  else b.style.display='none';
+}
+
+function renderCart() {
+  const el = document.getElementById('cart-items');
+  if(cart.length === 0) { el.innerHTML = '<div class="empty"><i class="ti ti-shopping-cart" style="font-size:32px;display:block;margin:0 auto 8px"></i>Your cart is empty</div>'; }
+  else {
+    el.innerHTML = cart.map((item,i) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary)">
+        <span><i class="ti ${icons[item.name]||'ti-box'}" aria-hidden="true" style="vertical-align:-2px;margin-right:8px;color:var(--color-text-info)"></i>${item.name}</span>
+        <span style="display:flex;align-items:center;gap:12px">
+          <span class="price">₹${item.price.toLocaleString('en-IN')}</span>
+          <button onclick="removeItem(${i})" style="padding:2px 8px;font-size:12px;color:var(--color-text-danger)"><i class="ti ti-x" aria-hidden="true"></i></button>
+        </span>
+      </div>`).join('');
+  }
+  const total = cart.reduce((s,i)=>s+i.price,0);
+  document.getElementById('cart-total').textContent = '₹' + total.toLocaleString('en-IN');
+}
+
+function removeItem(idx) {
+  cart.splice(idx,1);
+  updateBadge();
+  renderCart();
+}
+
+function clearCart() {
+  cart = [];
+  updateBadge();
+  renderCart();
+}
+
+function renderOrder() {
+  const el = document.getElementById('order-items');
+  if(cart.length === 0) { el.innerHTML = '<div class="empty">No items in order. <button onclick="go(\'products\')" style="display:inline">Browse Products</button></div>'; }
+  else {
+    el.innerHTML = '<table><tr><th>Product</th><th style="text-align:right">Price</th></tr>' +
+      cart.map(item => `<tr><td><i class="ti ${icons[item.name]||'ti-box'}" aria-hidden="true" style="vertical-align:-2px;margin-right:8px;color:var(--color-text-info)"></i>${item.name}</td><td style="text-align:right" class="price">₹${item.price.toLocaleString('en-IN')}</td></tr>`).join('') +
+      '</table>';
+  }
+  const total = cart.reduce((s,i)=>s+i.price,0);
+  document.getElementById('order-total').textContent = '₹' + total.toLocaleString('en-IN');
+}
+
+function showOffer() {
+  const box = document.getElementById('offer-box');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+function formatCard(el) {
+  let v = el.value.replace(/\D/g,'').substring(0,16);
+  el.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+
+function submitPayment() {
+  const name = document.getElementById('cname').value.trim();
+  const card = document.getElementById('ccard').value.trim();
+  const exp = document.getElementById('cexpiry').value;
+  if(!name || !card || !exp) { alert('Please fill in all fields.'); return; }
+  if(cart.length === 0) { alert('Your cart is empty! Add some items first.'); go('products'); return; }
+  document.getElementById('payment-form').style.display='none';
+  document.getElementById('payment-success').style.display='block';
+}
+
+function resetOrder() {
+  cart = [];
+  updateBadge();
+  document.getElementById('payment-form').style.display='block';
+  document.getElementById('payment-success').style.display='none';
+  document.getElementById('cname').value='';
+  document.getElementById('ccard').value='';
+  document.getElementById('cexpiry').value='';
+  go('home');
+}
+</script>
+
+</body>
+</html>
